@@ -28,7 +28,6 @@ sqlalchemy-stubs==0.3
 termcolor==1.1.0
 tox
 tox-docker
-tqdm
 types-boto==2.49.2
 types-cachetools==4.2.10
 types-cryptography==3.3.23.2
