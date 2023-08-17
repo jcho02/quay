@@ -155,6 +155,9 @@ jobs:
           python -m pip install --upgrade pip
           cat requirements-dev.txt | grep tox | xargs pip install
           tox -e py39-e2e
+        else
+          echo " Running on ${{ matrix.architecture }}"
+        fi
 
     - name: Install depedencneies and run on ppc64le
       run: |
@@ -172,6 +175,9 @@ jobs:
           cd build && git checkout master;
           cat requirements-dev.txt | grep tox | xargs pip install;
           tox -e py39-e2e;'
+        else
+          echo " Running on ${{ matrix.architecture }}"
+        fi
 
   registry:
     name: E2E Registry Tests
