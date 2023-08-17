@@ -163,7 +163,9 @@ jobs:
       run: |
         if [[ "${{ matrix.architecture }}" == "ppc64le" ]]; then
           echo "ppc64le"
-          docker run --rm -w /
+          docker run 
+          --rm 
+          -w /
           -e https://github.com/jcho02/quay.git
           -e master
           ubuntu:20.04
