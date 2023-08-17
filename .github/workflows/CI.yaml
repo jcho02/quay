@@ -2,13 +2,7 @@ name: CI
 on:
   # See the documentation for more intricate event dispatch here:
   # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#on
-  push:
-    branches:
-    - "!dependabot/*"
-    - "*"
-  pull_request:
-    branches:
-    - "*"
+  workflow_dispatch:
 jobs:
   build:
     name: Format
