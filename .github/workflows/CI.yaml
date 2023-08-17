@@ -149,7 +149,7 @@ jobs:
     - name: Install dependencies and run on amd64
       run: |
         if [[ "${{ matrix.architecture }}" == "amd64" ]]; then
-          sduo apt-get update
+          sudo apt-get update
           sudo apt-get install libgpgme-dev libldap2-dev libsasl2-dev swig
           python -m pip install --upgrade pip
           cat requirements-dev.txt | grep tox | xargs pip install
