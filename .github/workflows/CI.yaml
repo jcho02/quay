@@ -130,6 +130,9 @@ jobs:
   e2e:
     name: E2E Tests
     runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        architecture: [ amd64, ppc64le ]
     steps:
 
     - name: Checkout
