@@ -171,6 +171,7 @@ jobs:
           git clone https://github.com/jcho02/quay.git build;
           cd build && git checkout master;
           cat requirements-dev.txt | grep tox | xargs pip install;
+          sed -i "s/PyYAML==5.4.1/PyYAML==6.0.1/" requirements.txt;
           tox -e py39-e2e;'
         else
           echo " Running on ${{ matrix.architecture }}"
@@ -212,7 +213,9 @@ jobs:
           export DEBIAN_FRONTEND=noninteractive;
           apt-get -y update;
           apt-get -y install libgpgme-dev libldap2-dev libsasl2-dev swig python3.9-dev python3-pip findutils git;
-          python -m pip install --upgrade pip;
+          apt-get -y install libffi-dev libssl-dev libjpeg-dev libxml2-dev libxslt-dev;
+          apt-get -y install rustc cargo pkg-config;
+          python3 -m pip install --upgrade pip;
           git clone https://github.com/jcho02/quay.git build;
           cd build && git checkout master;
           cat requirements-dev.txt | grep tox | xargs pip install;
