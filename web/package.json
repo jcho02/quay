@@ -10,7 +10,7 @@
     "@patternfly/patternfly": "^4.185.1",
     "@patternfly/react-charts": "^6.94.19",
     "@patternfly/react-core": "^4.202.16",
-    "@patternfly/react-icons": "^4.53.16",
+    "@patternfly/react-icons": "^4.93.7",
     "@patternfly/react-table": "^4.71.16",
     "@redhat-cloud-services/frontend-components": "^3.9.31",
     "@redhat-cloud-services/frontend-components-config-utilities": "^1.5.31",
@@ -43,7 +43,6 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "format": "prettier --config .prettierrc \"src/**/*.{ts,tsx}\" --write",
-    "prepare": "cd .. && husky install web/.husky",
     "test:integration": "cypress run",
     "start:integration": "serve -s dist -l 9000",
     "quay:dump": "${CLIENT:=docker} exec quay-db pg_dump -U quay -d quay --clean --if-exists > ./cypress/test/quay-db-data.txt && ${CLIENT:=docker} cp quay-quay:/datastorage/registry/. ./cypress/test/quay-storage-data",
@@ -71,7 +70,7 @@
     "@typescript-eslint/parser": "^5.18.0",
     "axios-mock-adapter": "^1.20.0",
     "copy-webpack-plugin": "^10.2.4",
-    "css-loader": "^6.7.1",
+    "css-loader": "^6.8.1",
     "css-minimizer-webpack-plugin": "^3.4.1",
     "dotenv-webpack": "^7.1.0",
     "eslint": "^8.13.0",
@@ -83,11 +82,10 @@
     "eslint-plugin-jsx-a11y": "^6.7.1",
     "eslint-plugin-prettier": "^3.1.4",
     "eslint-plugin-react": "^7.33.0",
-    "eslint-plugin-react-hooks": "^4.4.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
     "file-loader": "^6.2.0",
     "html-webpack-plugin": "^5.5.0",
     "jws": "^4.0.0",
-    "lint-staged": ">=10",
     "moment": "^2.29.4",
     "prettier": "^2.1.2",
     "raw-loader": "^4.0.2",
@@ -95,7 +93,7 @@
     "react-dom": "^17.0.2",
     "sass": "^1.64.1",
     "serve": "^14.2.0",
-    "style-loader": "^3.3.1",
+    "style-loader": "^3.3.3",
     "svg-url-loader": "^7.1.1",
     "terser-webpack-plugin": "^5.3.9",
     "ts-loader": "^9.4.4",
@@ -108,15 +106,6 @@
     "webpack-merge": "^5.8.0"
   },
   "optionalDependencies": {
-    "cypress": "^10.10.0",
-    "husky": ">=6"
-  },
-  "lint-staged": {
-    "*.{ts,tsx}": "eslint --cache --fix"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
+    "cypress": "^10.10.0"
   }
 }
