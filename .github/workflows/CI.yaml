@@ -149,7 +149,6 @@ jobs:
     - name: Install dependencies and run on amd64
       run: |
         if [[ "${{ matrix.architecture }}" == "amd64" ]]; then
-          echo "amd64"          
           sudo apt-get update
           sudo apt-get install libgpgme-dev libldap2-dev libsasl2-dev swig
           python -m pip install --upgrade pip
@@ -162,20 +161,13 @@ jobs:
     - name: Install depedencneies and run on ppc64le
       run: |
         if [[ "${{ matrix.architecture }}" == "ppc64le" ]]; then
-          echo "ppc64le"
-          docker run 
-          --rm 
-          -w /
-          -e https://github.com/jcho02/quay.git
-          -e master
-          ubuntu:20.04
-          /bin/bash -ec '
-          sudo apt-get update;
-          sudo apt-get install libgpgme-dev libldap2-dev libsasl2-dev swig;
-          python -m pip install --upgrade pip;
-          git clone https://github.com/jcho02/quay.git build;
-          cd build && git checkout master;
-          cat requirements-dev.txt | grep tox | xargs pip install;
+          docker run --rm -w -e https://github.com/jcho02/quay.git -e master ubuntu:20.04 /bin/bash -c ' \
+          sudo apt-get update; \
+          sudo apt-get install libgpgme-dev libldap2-dev libsasl2-dev swig; \
+          python -m pip install --upgrade pip; \
+          git clone https://github.com/jcho02/quay.git build; \
+          cd build && git checkout master; \
+          cat requirements-dev.txt | grep tox | xargs pip install; \
           tox -e py39-e2e;'
         else
           echo " Running on ${{ matrix.architecture }}"
