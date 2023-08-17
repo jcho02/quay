@@ -149,8 +149,8 @@ jobs:
     - name: Install dependencies and run on amd64
       run: |
         if [[ "${{ matrix.architecture }}" == "amd64" ]]; then
-          sudo apt-get update
-          sudo apt-get install libgpgme-dev libldap2-dev libsasl2-dev swig
+          apt-get -y update
+          apt-get -y install libgpgme-dev libldap2-dev libsasl2-dev swig
           python -m pip install --upgrade pip
           cat requirements-dev.txt | grep tox | xargs pip install
           tox -e py39-e2e
@@ -161,13 +161,17 @@ jobs:
     - name: Install depedencneies and run on ppc64le
       run: |
         if [[ "${{ matrix.architecture }}" == "ppc64le" ]]; then
-          docker run --rm -w -e https://github.com/jcho02/quay.git -e master ubuntu:20.04 /bin/bash -c ' \
-          sudo apt-get update; \
-          sudo apt-get install libgpgme-dev libldap2-dev libsasl2-dev swig; \
-          python -m pip install --upgrade pip; \
-          git clone https://github.com/jcho02/quay.git build; \
-          cd build && git checkout master; \
-          cat requirements-dev.txt | grep tox | xargs pip install; \
+          docker run -it --rm -w / 
+          -e https://github.com/jcho02/quay.git 
+          -e master ubuntu:20.04 /bin/bash -c '
+          export DEBIAN_FRONTEND=noninteractive;
+          apt-get -y update;
+          apt-get -y install libgpgme-dev libldap2-dev libsasl2-dev swig python3.9-dev python3-pip findutils git;
+          apt-get -y install libffi-dev libssl-dev libjpeg-dev libxml2-dev libxslt-dev;
+          apt-get -y install rustc cargo pkg-config;
+          git clone https://github.com/jcho02/quay.git build;
+          cd build && git checkout master;
+          cat requirements-dev.txt | grep tox | xargs pip install;
           tox -e py39-e2e;'
         else
           echo " Running on ${{ matrix.architecture }}"
