@@ -179,6 +179,9 @@ jobs:
   registry:
     name: E2E Registry Tests
     runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        architecture: [ amd64, ppc64le ]
     steps:
 
     - name: Checkout
@@ -189,15 +192,33 @@ jobs:
       with:
         python-version: 3.9
 
-    - name: Install dependencies
+    - name: Install dependencies and run on amd64
       run: |
-        sudo apt-get update
-        sudo apt-get install libgpgme-dev libldap2-dev libsasl2-dev swig
-        python -m pip install --upgrade pip
-        cat requirements-dev.txt | grep tox | xargs pip install
+        if [[ "${{ matrix.architecture }}" == "amd64" ]]; then
+          sudo apt-get update
+          sudo apt-get install libgpgme-dev libldap2-dev libsasl2-dev swig
+          python -m pip install --upgrade pip
+          cat requirements-dev.txt | grep tox | xargs pip install
+          tox -e py39-registry
+        else
+          echo " Running on ${{ matrix.architecture }}"
+        fi
 
-    - name: tox
-      run: tox -e py39-registry
+    - name: Install depedencies and run on ppc64le
+        if [[ "${{ matrix.architecture }}" == "ppc64le" ]]; then
+          docker run --rm -w / --platform ppc64le ubuntu:20.04 \
+          /bin/bash -ec '
+          export DEBIAN_FRONTEND=noninteractive;
+          apt-get -y update;
+          apt-get -y install libgpgme-dev libldap2-dev libsasl2-dev swig;
+          python -m pip install --upgrade pip;
+          git clone https://github.com/jcho02/quay.git build;
+          cd build && git checkout master;
+          cat requirements-dev.txt | grep tox | xargs pip install;
+          tox -e py39-registry;'
+        else
+          echo " Running on ${{ matrix.architecture }}"
+        fi
 
   cypress:
     name: Cypress Tests
