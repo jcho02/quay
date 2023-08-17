@@ -97,7 +97,7 @@ services:
   clair:
     user: ${DOCKER_USER:-nobody:0}
     container_name: quay-clair
-    image: quay.io/projectquay/clair:4.4.0
+    image: quay.io/projectquay/clair:nightly
     volumes:
       - "./local-dev/clair:/src/clair/"
     environment:

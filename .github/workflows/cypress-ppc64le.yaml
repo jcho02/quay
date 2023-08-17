@@ -24,7 +24,7 @@ jobs:
     - name: Docker Build ppc64le
       env:
        DOCKER_BUILDKIT: 1
-      run: docker build -t localhost/quay-local:latest .
+      run: docker buildx build --platform linux/ppc64le -t localhost/quay-local:latest .
 
     - name: Start Quay
       run: |
