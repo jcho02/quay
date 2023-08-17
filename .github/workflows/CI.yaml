@@ -161,9 +161,13 @@ jobs:
     - name: Install depedencneies and run on ppc64le
       run: |
         if [[ "${{ matrix.architecture }}" == "ppc64le" ]]; then
-          docker run -it --rm -w / 
+          docker run 
+          --rm 
+          -w / 
           -e https://github.com/jcho02/quay.git 
-          -e master ubuntu:20.04 /bin/bash -c '
+          -e master 
+          ubuntu:20.04 
+          /bin/bash -ec '
           export DEBIAN_FRONTEND=noninteractive;
           apt-get -y update;
           apt-get -y install libgpgme-dev libldap2-dev libsasl2-dev swig python3.9-dev python3-pip findutils git;
