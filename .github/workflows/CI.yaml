@@ -135,20 +135,40 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
 
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v2
+
     - name: Set up Python 3.9
       uses: actions/setup-python@v4
       with:
         python-version: 3.9
 
-    - name: Install dependencies
+    - name: Install dependencies and run on amd64
       run: |
-        sudo apt-get update
-        sudo apt-get install libgpgme-dev libldap2-dev libsasl2-dev swig
-        python -m pip install --upgrade pip
-        cat requirements-dev.txt | grep tox | xargs pip install
+        if [[ "${{ matrix.architecture }}" == "amd64" ]]; then
+          echo "amd64"          
+          sudo apt-get update
+          sudo apt-get install libgpgme-dev libldap2-dev libsasl2-dev swig
+          python -m pip install --upgrade pip
+          cat requirements-dev.txt | grep tox | xargs pip install
+          tox -e py39-e2e
 
-    - name: tox
-      run: tox -e py39-e2e
+    - name: Install depedencneies and run on ppc64le
+      run: |
+        if [[ "${{ matrix.architecture }}" == "ppc64le" ]]; then
+          echo "ppc64le"
+          docker run --rm -w /
+          -e https://github.com/jcho02/quay.git
+          -e master
+          ubuntu:20.04
+          /bin/bash -ec '
+          sudo apt-get update;
+          sudo apt-get install libgpgme-dev libldap2-dev libsasl2-dev swig;
+          python -m pip install --upgrade pip;
+          git clone https://github.com/jcho02/quay.git build;
+          cd build && git checkout master;
+          cat requirements-dev.txt | grep tox | xargs pip install;
+          tox -e py39-e2e;'
 
   registry:
     name: E2E Registry Tests
@@ -183,6 +203,9 @@ jobs:
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
+
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v2
 
     - name: Docker Build
       env:
