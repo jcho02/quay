@@ -215,7 +215,7 @@ jobs:
           apt-get install -y libgpgme-dev libldap2-dev libsasl2-dev swig git docker.io;
           pip install --upgrade pip;
           pip install wheel;
-          sudo systemctl start docker;
+          systemctl start docker;
           docker build -t localhost/quay-local:latest .;
           docker-compose up -d redis quay-db;
           docker exec -t quay-db bash -c;
