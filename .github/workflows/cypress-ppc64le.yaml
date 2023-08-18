@@ -7,6 +7,9 @@ jobs:
   cypress:
     name: Cypress Tests
     runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        platform: [ ppc64le ]
 
     steps:
     - name: Checkout
@@ -20,7 +23,7 @@ jobs:
 
     - name: Use ppc64le environment
       run: >-
-        docker run -w --platform ppc64le ubuntu:22:04 \
+        docker run --rm -w ubuntu:22:04 \
         /bin/bash -ec '
         export DEBIAN_FRONTEND=noninteractive;
         apt-get -y update;
