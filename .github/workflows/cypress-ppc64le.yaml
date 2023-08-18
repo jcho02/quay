@@ -20,10 +20,7 @@ jobs:
 
     - name: Use ppc64le environment
       run: >-
-        docker run -it w / --platform ppc64le ubuntu:22:04 \
-        /bin/bash -ec '
-        export DEBIAN_FRONTEND=noninteractive; 
-        '
+        docker run -it w --platform ppc64le ubuntu:22:04
 
     - name: Docker Build ppc64le
       env:
