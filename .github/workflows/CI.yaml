@@ -207,15 +207,14 @@ jobs:
           --platform ${{ matrix.architecture }}
           --mount "type=bind,src=$(pwd),dst=/build"
           -w "/build"
-          ubuntu:22.04
+          python:3.9
           /bin/bash -ec '
           export DEBIAN_FRONTEND=noninteractive;
           echo "Inside Cypress Tests";
           apt-get update;
-          apt-get install -y python3.9-dev python3-pip libgpgme-dev libldap2-dev libsasl2-dev swig git docker.io;
+          apt-get install -y libgpgme-dev libldap2-dev libsasl2-dev swig git docker.io;
           pip install --upgrade pip;
           pip install wheel;
-          service docker restart;
           docker build -t localhost/quay-local:latest .;
           docker-compose up -d redis quay-db;
           docker exec -t quay-db bash -c;
