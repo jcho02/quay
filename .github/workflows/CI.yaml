@@ -206,14 +206,13 @@ jobs:
           --rm          
           --platform ${{ matrix.architecture }}
           --mount "type=bind,src=$(pwd),dst=/build"
-          -v /var/run/docker.sock:/var/run/docker.sock
           -w "/build"
           python:3.9
           /bin/bash -ec '
           export DEBIAN_FRONTEND=noninteractive;
           echo "Inside Cypress Tests";
           apt-get update;
-          apt-get install -y libgpgme-dev libldap2-dev libsasl2-dev swig git;
+          apt-get install -y libgpgme-dev libldap2-dev libsasl2-dev swig git docker-ce;
           pip install --upgrade pip;
           pip install wheel;
           docker build -t localhost/quay-local:latest .;
