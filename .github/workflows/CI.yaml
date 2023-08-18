@@ -2,7 +2,13 @@ name: CI
 on:
   # See the documentation for more intricate event dispatch here:
   # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#on
-  workflow_dispatch:
+  push:
+    branches:
+    - "!dependabot/*"
+    - "*"
+  pull_request:
+    branches:
+    - "*"
 jobs:
   build:
     name: Format
@@ -130,133 +136,10 @@ jobs:
   e2e:
     name: E2E Tests
     runs-on: ubuntu-20.04
-    strategy:
-      matrix:
-        architecture: [ amd64, ppc64le ]
     steps:
 
     - name: Checkout
       uses: actions/checkout@v3
-
-    - name: Set up QEMU
-      uses: docker/setup-qemu-action@v2
-
-    - name: Set up Python 3.9
-      uses: actions/setup-python@v4
-      with:
-        python-version: 3.9
-
-    - name: Install dependencies and run on amd64
-      run: |
-        if [[ "${{ matrix.architecture }}" == "amd64" ]]; then
-          sudo apt-get update
-          sudo apt-get install libgpgme-dev libldap2-dev libsasl2-dev swig
-          python -m pip install --upgrade pip
-          cat requirements-dev.txt | grep tox | xargs pip install
-          tox -e py39-e2e
-        else
-          echo " Running on ${{ matrix.architecture }}"
-        fi
-
-    - name: Install depedencneies and run on ppc64le
-      run: |
-        if [[ "${{ matrix.architecture }}" == "ppc64le" ]]; then
-          docker run --rm -w / --platform ppc64le ubuntu:20.04 \
-          /bin/bash -ec '
-          export DEBIAN_FRONTEND=noninteractive;
-          apt-get -y update;
-          apt-get -y install libgpgme-dev libldap2-dev libsasl2-dev swig python3.9-dev python3-pip findutils git;
-          apt-get -y install libffi-dev libssl-dev libjpeg-dev libxml2-dev libxslt-dev;
-          apt-get -y install rustc cargo pkg-config;
-          git clone https://github.com/jcho02/quay.git build;
-          cd build && git checkout master;
-          cat requirements-dev.txt | grep tox | xargs pip install;
-          sed -i "s/PyYAML==5.4.1/PyYAML==6.0.1/" requirements.txt;
-          tox -e py39-e2e;'
-        else
-          echo " Running on ${{ matrix.architecture }}"
-        fi
-
-  registry:
-    name: E2E Registry Tests
-    runs-on: ubuntu-20.04
-    strategy:
-      matrix:
-        architecture: [ amd64, ppc64le ]
-    steps:
-
-    - name: Checkout
-      uses: actions/checkout@v3
-
-    - name: Set up QEMU
-      uses: docker/setup-qemu-action@v2
-
-    - name: Set up Python 3.9
-      uses: actions/setup-python@v4
-      with:
-        python-version: 3.9
-
-    - name: Install dependencies and run on amd64
-      run: |
-        if [[ "${{ matrix.architecture }}" == "amd64" ]]; then
-          sudo apt-get update
-          sudo apt-get install libgpgme-dev libldap2-dev libsasl2-dev swig
-          python -m pip install --upgrade pip
-          cat requirements-dev.txt | grep tox | xargs pip install
-          tox -e py39-registry
-        else
-          echo " Running on ${{ matrix.architecture }}"
-        fi
-
-    - name: Install depedencies and run on ppc64le
-      run: |
-        if [[ "${{ matrix.architecture }}" == "ppc64le" ]]; then
-          docker run --rm -w / --platform ppc64le ubuntu:20.04 \
-          /bin/bash -ec '
-          export DEBIAN_FRONTEND=noninteractive;
-          apt-get -y update;
-          apt-get -y install libgpgme-dev libldap2-dev libsasl2-dev swig python3.9-dev python3-pip findutils git;
-          apt-get -y install libffi-dev libssl-dev libjpeg-dev libxml2-dev libxslt-dev;
-          apt-get -y install rustc cargo pkg-config;
-          python3 -m pip install --upgrade pip;
-          git clone https://github.com/jcho02/quay.git build;
-          cd build && git checkout master;
-          cat requirements-dev.txt | grep tox | xargs pip install;
-          tox -e py39-registry;'
-        else
-          echo " Running on ${{ matrix.architecture }}"
-        fi
-
-  cypress:
-    name: Cypress Tests
-    runs-on: ubuntu-22.04
-    steps:
-
-    - name: Checkout
-      uses: actions/checkout@v3
-
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
-
-    - name: Set up QEMU
-      uses: docker/setup-qemu-action@v2
-
-    - name: Docker Build
-      env:
-       DOCKER_BUILDKIT: 1
-      run: docker build -t localhost/quay-local:latest .
-
-    - name: Start Quay
-      run: |
-        docker-compose up -d redis quay-db
-        docker exec -t quay-db bash -c 'while ! pg_isready; do echo "waiting for postgres"; sleep 2; done'
-        DOCKER_USER="1001:0" docker-compose up -d --no-build quay
-
-    - name: Checkout
-      uses: actions/checkout@v3
-
-    - name: Seed Database
-      run: cd web && npm run quay:seed
 
     - name: Set up Python 3.9
       uses: actions/setup-python@v4
@@ -265,15 +148,85 @@ jobs:
 
     - name: Install dependencies
       run: |
+        sudo apt-get update
+        sudo apt-get install libgpgme-dev libldap2-dev libsasl2-dev swig
         python -m pip install --upgrade pip
-        pip install pytest requests
+        cat requirements-dev.txt | grep tox | xargs pip install
 
-    - name: Integration Test
-      run:  |
-        docker restart quay-quay
-        sleep 30
-        make integration-test
+    - name: tox
+      run: tox -e py39-e2e
 
+  registry:
+    name: E2E Registry Tests
+    runs-on: ubuntu-20.04
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.9
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install libgpgme-dev libldap2-dev libsasl2-dev swig
+        python -m pip install --upgrade pip
+        cat requirements-dev.txt | grep tox | xargs pip install
+
+    - name: tox
+      run: tox -e py39-registry
+
+  cypress:
+    name: Cypress Tests
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        platform: ['linux/amd64', 'linux/ppc64le']
+        os: [ ubuntu20.04 ]
+        architecture: [ ppc64le ]
+      fail-fast: false
+      max-parallel: 2   
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+      
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v2
+
+    - name: Install dependencies and check types on ${{ matrix.architecture }} 
+      run: >-
+          docker run 
+          --rm          
+          --platform ${{ matrix.architecture }}
+          --mount "type=bind,src=$(pwd),dst=/build"
+          -w "/build"
+          python:3.9
+          /bin/bash -ec '
+          export DEBIAN_FRONTEND=noninteractive;
+          echo "Inside Cypress Tests";
+          apt-get update;
+          apt-get install -y libgpgme-dev libldap2-dev libsasl2-dev swig git;
+          pip install --upgrade pip;
+          pip install wheel;
+          docker build -t localhost/quay-local:latest .;
+          docker-compose up -d redis quay-db;
+          docker exec -t quay-db bash -c;
+          DOCKER_USER="1001:0" docker-compose up -d --no-build quay;
+          echo "Going for npm and python";
+          git clone https://github.com/quay/quay.git;
+          cd web && npm run quay:seed;
+          pip install pytest requests;
+          docker restart quay-quay;
+          sleep 50;          
+          make integration-test;'
+          
     - name: Cypress run
       uses: cypress-io/github-action@v5
       with:
