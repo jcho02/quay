@@ -212,7 +212,7 @@ jobs:
           export DEBIAN_FRONTEND=noninteractive;
           echo "Inside Cypress Tests";
           apt-get update;
-          apt-get install -y libgpgme-dev libldap2-dev libsasl2-dev swig git;
+          apt-get install -y libgpgme-dev libldap2-dev libsasl2-dev swig git docker;
           pip install --upgrade pip;
           pip install wheel;
           docker build -t localhost/quay-local:latest .;
