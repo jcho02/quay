@@ -212,10 +212,9 @@ jobs:
           export DEBIAN_FRONTEND=noninteractive;
           echo "Inside Cypress Tests";
           apt-get update;
-          apt-get install -y libgpgme-dev libldap2-dev libsasl2-dev swig git docker.io;
+          apt-get install -y libgpgme-dev libldap2-dev libsasl2-dev swig git docker-ce docker-ce-cli containerd.io;
           pip install --upgrade pip;
           pip install wheel;
-          systemctl start docker;
           docker build -t localhost/quay-local:latest .;
           docker-compose up -d redis quay-db;
           docker exec -t quay-db bash -c;
