@@ -7,11 +7,8 @@ jobs:
   cypress:
     name: Cypress Tests
     runs-on: ubuntu-22.04
-    strategy:
-      matrix:
-        architecture: [ ppc64le ]
-    steps:
 
+    steps:
     - name: Checkout
       uses: actions/checkout@v3
 
@@ -21,10 +18,17 @@ jobs:
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v2
 
+    - name: Use ppc64le environment
+      run: >-
+        docker run -it w / --platform ppc64le ubuntu:22:04 \
+        /bin/bash -ec '
+        export DEBIAN_FRONTEND=noninteractive; 
+        '
+
     - name: Docker Build ppc64le
       env:
        DOCKER_BUILDKIT: 1
-      run: docker buildx build --platform linux/ppc64le -t localhost/quay-local:latest .
+      run: docker build -t localhost/quay-local:latest .
 
     - name: Start Quay
       run: |
@@ -65,6 +69,9 @@ jobs:
         working-directory: web
       env:
         REACT_QUAY_APP_API_URL: http://localhost:8080
+
+    - name: Docker exit
+      run: exit
 
     - uses: actions/upload-artifact@v3
       if: failure()
