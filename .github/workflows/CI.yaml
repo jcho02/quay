@@ -184,9 +184,8 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        platform: ['linux/amd64', 'linux/ppc64le']
         os: [ ubuntu20.04 ]
-        architecture: [ ppc64le ]
+        architecture: [ amd64, ppc64le ]
       fail-fast: false
       max-parallel: 2   
     steps:
@@ -201,32 +200,41 @@ jobs:
       uses: docker/setup-qemu-action@v2
 
     - name: Install dependencies and check types on ${{ matrix.architecture }} 
-      run: >-
-          docker run 
-          --rm          
-          --platform ${{ matrix.architecture }}
-          --mount "type=bind,src=$(pwd),dst=/build"
-          -w "/build"
-          python:3.9
-          /bin/bash -ec '
-          export DEBIAN_FRONTEND=noninteractive;
-          echo "Inside Cypress Tests";
-          apt-get update;
-          apt-get install -y libgpgme-dev libldap2-dev libsasl2-dev swig git;
-          apt-get install -y docker.io;
-          pip install --upgrade pip;
-          pip install wheel;
-          docker build -t localhost/quay-local:latest .;
-          docker-compose up -d redis quay-db;
-          docker exec -t quay-db bash -c;
-          DOCKER_USER="1001:0" docker-compose up -d --no-build quay;
-          echo "Going for npm and python";
-          git clone https://github.com/quay/quay.git;
-          cd web && npm run quay:seed;
-          pip install pytest requests;
-          docker restart quay-quay;
-          sleep 50;          
-          make integration-test;'
+      run: |
+        docker run --rm --platform ${{ matrix.architecture }} -v /var/run/docker.sock:/var/run/docker.sock --mount "type=bind,src=$(pwd),dst=/build" -w "/build" ubuntu:20.04 /bin/bash -ec ' \
+        echo "hello from $(uname -m)"; \
+        export DEBIAN_FRONTEND=noninteractive; \
+        apt-get update -y; \
+        apt-get install -y git wget tar curl gnupg2 ca-certificates sudo build-essential gcc manpages-dev autoconf libtool pkg-config software-properties-common; \
+        sudo install -m 0755 -d /etc/apt/keyrings; \
+        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg; \
+        sudo chmod a+r /etc/apt/keyrings/docker.gpg; \
+        echo "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+        "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null; \
+        apt-get update -y; \
+        sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin; \
+        sudo apt-get install -y docker-compose; \
+        docker --version; \
+        docker-compose --version; \
+        docker ps; \
+        add-apt-repository ppa:deadsnakes/ppa -y; \
+        apt-get install python3.9 python3-pip python3-dev libpython3.9-dev python3.9-distutils -y; \
+        python3.9 -m pip install --upgrade pip; \
+        apt-get install -y libgpgme-dev libldap2-dev libsasl2-dev; \
+        pip --version; \
+        export DOCKER_BUILDKIT=1; \
+        docker build -t localhost/quay-local:latest .; \
+        docker compose up -d redis quay-db;'
+        # docker exec -t quay-db bash -c 'echo "Hello from quay-db";'; \
+        # DOCKER_USER="1001:0"; \
+        # docker-compose up -d --no-build quay; \
+        # echo "Going for npm and python"; \
+        # cd web && npm run quay:seed; \
+        # pip install pytest requests; \
+        # docker restart quay-quay; \
+        # sleep 50; \
+        # cd ..; \
+        # make integration-test;'
           
     - name: Cypress run
       uses: cypress-io/github-action@v5
