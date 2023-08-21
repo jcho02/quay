@@ -231,10 +231,10 @@ jobs:
         echo "Going for npm and python"; \
         cd web && npm start && npm run quay:seed; \
         pip install pytest requests; \
-        docker restart quay-quay; \
+        docker restart quay-quay ' \
         sleep 50; \
         cd ..; \
-        make integration-test;'
+        make integration-test;' '
           
     - name: Cypress run
       uses: cypress-io/github-action@v5
