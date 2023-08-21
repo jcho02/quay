@@ -224,17 +224,17 @@ jobs:
         pip --version; \
         export DOCKER_BUILDKIT=1; \
         docker build -t localhost/quay-local:latest .; \
-        docker compose up -d redis quay-db;'
-        # docker exec -t quay-db bash -c 'echo "Hello from quay-db";'; \
-        # DOCKER_USER="1001:0"; \
-        # docker-compose up -d --no-build quay; \
-        # echo "Going for npm and python"; \
-        # cd web && npm run quay:seed; \
-        # pip install pytest requests; \
-        # docker restart quay-quay; \
-        # sleep 50; \
-        # cd ..; \
-        # make integration-test;'
+        docker compose up -d redis quay-db; \
+        docker exec -t quay-db bash -c; \
+        DOCKER_USER="1001:0"; \
+        docker compose up -d --no-build quay; \
+        echo "Going for npm and python"; \
+        cd web && npm run quay:seed; \
+        pip install pytest requests; \
+        docker restart quay-quay; \
+        sleep 50; \
+        cd ..; \
+        make integration-test;'
           
     - name: Cypress run
       uses: cypress-io/github-action@v5
