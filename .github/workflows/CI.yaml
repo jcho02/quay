@@ -227,10 +227,10 @@ jobs:
         docker compose up -d redis quay-db; \
         docker exec -d quay-db bash ' \
         DOCKER_USER="1001:0"; \
-        docker compose up -d --no-build quay; \
+        docker compose up -d --no-build quay; '\
         echo "Going for npm and python"; \
         cd web && npm run quay:seed; \
-        pip install pytest requests; '\
+        pip install pytest requests; \
         docker restart quay-quay; \
         sleep 50; \
         cd ..; \
