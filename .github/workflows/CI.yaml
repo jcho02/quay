@@ -205,7 +205,7 @@ jobs:
         echo "hello from $(uname -m)"; \
         export DEBIAN_FRONTEND=noninteractive; \
         apt-get update -y; \
-        apt-get install -y git make wget tar curl gnupg2 ca-certificates sudo build-essential gcc manpages-dev autoconf libtool pkg-config software-properties-common; \
+        apt-get install -y git make npm wget tar curl gnupg2 ca-certificates sudo build-essential gcc manpages-dev autoconf libtool pkg-config software-properties-common; \
         sudo install -m 0755 -d /etc/apt/keyrings; \
         curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg; \
         sudo chmod a+r /etc/apt/keyrings/docker.gpg; \
