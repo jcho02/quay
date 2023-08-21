@@ -225,7 +225,7 @@ jobs:
         export DOCKER_BUILDKIT=1; \
         docker build --platform $(uname -m) -t localhost/quay-local:latest .; \
         docker compose up -d redis quay-db; \
-        docker exec -d quay-db bash ; \
+        docker exec quay-db bash ; \
         DOCKER_USER="1001:0"; \
         docker compose up -d --no-build quay; \
         echo "Going for npm and python"; \
