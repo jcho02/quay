@@ -236,8 +236,9 @@ jobs:
         echo "Going for npm and python"; \
         cd web && npm run quay:seed; \
         pip install pytest requests grpcio==1.53.0; \
+        docker start quay-quay; \
         sleep 50; \
-        docker ps -a; \
+        docker logs quay-quay; \
         cd ..; \
         make integration-test;'
           
