@@ -229,6 +229,9 @@ jobs:
         sleep 100; \
         DOCKER_USER="1001:0" docker compose up -d --no-build quay; \
         docker ps -a; \
+        docker restart quay-quay; \
+        sleep 50; \
+        docker ps -a; \
         echo "Going for npm and python"; \
         cd web && npm run quay:seed; \
         pip install pytest requests grpcio==1.53.0; \
