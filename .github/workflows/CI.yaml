@@ -224,12 +224,13 @@ jobs:
         python3.9 --version; \
         apt-get install -y libgpgme-dev libldap2-dev libsasl2-dev; \
         export DOCKER_BUILDKIT=1; \
+        cd ..; \
+        chown -R 1001:root quay/; \
+        cd quay; \
         docker build -t localhost/quay-local:latest .; \
         docker compose up -d redis quay-db; \
         sleep 100; \
         DOCKER_USER="1001:0" docker compose up -d --no-build quay; \
-        docker ps -a; \
-        docker start quay-quay; \
         docker start quay-db; \
         sleep 50; \
         docker ps -a; \
@@ -238,7 +239,6 @@ jobs:
         pip install pytest requests grpcio==1.53.0; \
         docker start quay-quay; \
         sleep 50; \
-        docker logs quay-quay; \
         cd ..; \
         make integration-test;'
           
