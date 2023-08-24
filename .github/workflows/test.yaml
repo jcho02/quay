@@ -33,7 +33,7 @@ jobs:
 
     - name: Install dependencies and check types on ${{ matrix.architecture }}
       run: |
-        docker run --rm --platform ${{ matrix.architecture }} -v /var/run/docker.sock:/var/run/docker.sock --mount "type=bind,src=$(pwd),dst=/build" -w "/build" ubuntu:20.04 /bin/bash -ec ' \
+        docker run --rm --platform ${{ matrix.architecture }} -v /var/run/docker.sock:/var/run/docker.sock --mount "type=bind,src=$(pwd),dst=/build/quay" -w "/build/quay" ubuntu:20.04 /bin/bash -ec ' \
         export DEBIAN_FRONTEND=noninteractive; \
         apt-get update -y; \
         apt-get install -y git wget tar curl npm gnupg2 ca-certificates sudo build-essential gcc manpages-dev autoconf libtool pkg-config software-properties-common; \
@@ -53,7 +53,7 @@ jobs:
         cd ..; \
         echo "$(ls -l)"; \
         echo "$(pwd)"; \
-        chown -R 1001:1001 build/; \
+        chown -R 1001:build build/quay; \
         cd build; \
         docker ps -a; \
         DOCKER_USER="1001:0" docker compose up -d --no-build quay; \
