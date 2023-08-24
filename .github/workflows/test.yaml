@@ -34,6 +34,17 @@ jobs:
     - name: Install dependencies and check types on ${{ matrix.architecture }}
       run: |
         docker run --rm --platform ${{ matrix.architecture }} -v /var/run/docker.sock:/var/run/docker.sock --mount "type=bind,src=$(pwd),dst=/build" -w "/build" ubuntu:20.04 /bin/bash -ec ' \
+        export DEBIAN_FRONTEND=noninteractive; \
+        apt-get update -y; \
+        apt-get install -y git wget tar curl npm gnupg2 ca-certificates sudo build-essential gcc manpages-dev autoconf libtool pkg-config software-properties-common; \
+        sudo install -m 0755 -d /etc/apt/keyrings; \
+        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg; \
+        sudo chmod a+r /etc/apt/keyrings/docker.gpg; \
+        echo "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+        "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null; \
+        apt-get update -y; \
+        sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin; \
+        sudo apt-get install -y docker-compose; \
         echo "$(pwd)"; \
         echo "$(ls -l)"; \
         cd ..; \
