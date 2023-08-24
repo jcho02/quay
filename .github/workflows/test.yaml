@@ -52,10 +52,8 @@ jobs:
         echo "$(ls -l)"; \
         cd ..; \
         echo "$(ls -l)"; \
-        cd root; \
         echo "$(pwd); \
-        echo "$(ls -l); \
-        chown -R 1001:root build/; \
+        chown -R 1001:1001 build/; \
         cd build; \
         docker ps -a; \
         DOCKER_USER="1001:0" docker compose up -d --no-build quay; \
