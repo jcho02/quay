@@ -51,6 +51,10 @@ jobs:
         echo "$(pwd)"; \
         echo "$(ls -l)"; \
         cd ..; \
+        echo "$(ls -l)"; \
+        cd root; \
+        echo "$(pwd); \
+        echo "$(ls -l); \
         chown -R 1001:root build/; \
         cd build; \
         docker ps -a; \
