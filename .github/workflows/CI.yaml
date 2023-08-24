@@ -224,9 +224,7 @@ jobs:
         python3.9 --version; \
         apt-get install -y libgpgme-dev libldap2-dev libsasl2-dev; \
         export DOCKER_BUILDKIT=1; \
-        cd ..; \
-        chown -R 1001:root quay/; \
-        cd quay; \
+        chown -R 1001:1001 $(pwd)/; \
         docker build -t localhost/quay-local:latest .; \
         docker compose up -d redis quay-db; \
         sleep 100; \
