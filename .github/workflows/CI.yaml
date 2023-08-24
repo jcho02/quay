@@ -2,7 +2,7 @@ name: CI
 on:
   # See the documentation for more intricate event dispatch here:
   # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#on
-  workflow_dispatch:
+  push:
     branches:
     - "!dependabot/*"
     - "*"
@@ -226,6 +226,9 @@ jobs:
         export DOCKER_BUILDKIT=1; \
         chown -R 1001:1001 $(pwd)/; \
         docker build -t localhost/quay-local:latest .; \
+        cd ..; \
+        chown -R 1001:root build/; \
+        cd build; \
         docker compose up -d redis quay-db; \
         sleep 100; \
         DOCKER_USER="1001:0" docker compose up -d --no-build quay; \
@@ -238,6 +241,7 @@ jobs:
         docker start quay-quay; \
         sleep 50; \
         cd ..; \
+        docker ps -a; \
         make integration-test;'
           
     - name: Cypress run
