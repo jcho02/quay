@@ -37,7 +37,7 @@ jobs:
         echo "$(pwd)"; \
         echo "$(ls -l)"; \
         cd ..; \
-        chown -R 1001:/ build/; \
+        chown -R 1001:root build/; \
         cd build; \
         DOCKER_USER="1001:0" docker compose up -d --no-build quay; \
         docker ps -a;'     
