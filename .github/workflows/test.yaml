@@ -45,10 +45,12 @@ jobs:
         apt-get update -y; \
         sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin; \
         sudo apt-get install -y docker-compose; \
+        docker compose --version; \
         echo "$(pwd)"; \
         echo "$(ls -l)"; \
         cd ..; \
         chown -R 1001:root build/; \
         cd build; \
+        docker ps -a; \
         DOCKER_USER="1001:0" docker compose up -d --no-build quay; \
-        docker ps -a;'     
+        docker ps -a;'
