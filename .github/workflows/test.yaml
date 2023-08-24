@@ -52,7 +52,7 @@ jobs:
         echo "$(ls -l)"; \
         cd ..; \
         echo "$(ls -l)"; \
-        echo "$(pwd); \
+        echo "$(pwd)"; \
         chown -R 1001:1001 build/; \
         cd build; \
         docker ps -a; \
