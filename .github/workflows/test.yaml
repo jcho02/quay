@@ -53,12 +53,11 @@ jobs:
         cd ..; \
         echo "$(ls -l)"; \
         echo "$(pwd)"; \
-        chown -R 1001:docker build/; \
+        chown -R 1001:0 build/; \
         cd build; \
         docker ps -a; \
         DOCKER_USER="1001:0" docker compose up -d --no-build quay; \
         docker ps -a; \
         sleep 50; \
         docker ps -a; \
-        ls -l quay-registry; \
         docker logs quay-quay'
