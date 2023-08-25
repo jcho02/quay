@@ -63,4 +63,5 @@ jobs:
         docker start quay-quay; \
         sleep 50; \
         docker ps -a; \
+        docker logs quay-db; \
         docker logs quay-quay'
