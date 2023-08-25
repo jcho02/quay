@@ -59,6 +59,8 @@ jobs:
         docker compose up -d redis quay-db; \
         DOCKER_USER="1001:0" docker compose up -d --no-build quay; \
         docker ps -a; \
+        docker start quay-db; \
+        docker start quay-quay; \
         sleep 50; \
         docker ps -a; \
         docker logs quay-quay'
