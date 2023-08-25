@@ -59,4 +59,5 @@ jobs:
         DOCKER_USER="1001:0" docker compose up -d --no-build quay; \
         docker ps -a; \
         sleep 50; \
-        docker ps -a;'
+        docker ps -a; \
+        docker logs quay-quay'
