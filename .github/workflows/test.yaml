@@ -56,7 +56,7 @@ jobs:
         chown -R 1001:docker build/; \
         cd build; \
         docker ps -a; \
-        docker-compose up -d redis quay-db; \
+        docker compose up -d redis quay-db; \
         DOCKER_USER="1001:0" docker compose up -d --no-build quay; \
         docker ps -a; \
         sleep 50; \
