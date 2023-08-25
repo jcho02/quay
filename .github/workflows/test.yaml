@@ -60,4 +60,5 @@ jobs:
         docker ps -a; \
         sleep 50; \
         docker ps -a; \
+        ls -l quay-registry; \
         docker logs quay-quay'
