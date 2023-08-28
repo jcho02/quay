@@ -149,6 +149,7 @@ jobs:
           python3 --version; \
           pip --version; \
           pip install wheel; \
+          sed -i "s/PyYAML==5.4.1/PyYAML==6.0.1/" requirements.txt; \
           pip install -r ./requirements-dev.txt --ignore-installed; \
           make types-test;'
         else
