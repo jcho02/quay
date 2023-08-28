@@ -138,8 +138,7 @@ jobs:
     - name: Run types-test on ppc64le 
       run: |
         if [[ "${{ matrix.architecture }}" == "ppc64le" ]]; then
-          docker run --rm -w /root/quay --platform ppc64le ubuntu-20.04 \
-          /bin/bash -c ' \
+          docker run --rm --platform ${{ matrix.architecture }} -v /var/run/docker.sock:/var/run/docker.sock --mount "type=bind,src=$(pwd),dst=/build" -w "/build" ubuntu:20.04 /bin/bash -ec  ' \
           source ~/.profile; \
           sudo apt-get update; \
           sudo apt-get install libgpgme-dev libldap2-dev libsasl2-dev swig; \
