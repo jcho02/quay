@@ -227,7 +227,7 @@ jobs:
         chown -R 1001:1001 $(pwd)/; \
         docker build -t localhost/quay-local:latest .; \
         cd ..; \
-        chown -R 1001:root build/; \
+        chown -R 1001:docker build/; \
         cd build; \
         docker compose up -d redis quay-db; \
         sleep 100; \
