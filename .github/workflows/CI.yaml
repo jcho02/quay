@@ -140,6 +140,7 @@ jobs:
         if [[ "${{ matrix.architecture }}" == "ppc64le" ]]; then
           docker run --rm --platform ${{ matrix.architecture }} -v /var/run/docker.sock:/var/run/docker.sock --mount "type=bind,src=$(pwd),dst=/build" -w "/build" ubuntu:20.04 /bin/bash -ec  ' \
           export DEBIAN_FRONTEND=noninteractive; \
+          export CRYPTOGRAPHY_DONT_BUILD_RUST=1; \
           apt-get -y update; \
           apt-get install -y libgpgme-dev libldap2-dev libsasl2-dev swig curl git make; \
           apt-get install python3.9 python3-pip python3-dev libpython3.9-dev python3.9-distutils -y; \
@@ -149,7 +150,8 @@ jobs:
           python3 --version; \
           pip --version; \
           pip install wheel; \
-          cat requirements-dev.txt |  xargs pip install;
+          pip install --upgrade homeassistant; \
+          cat requirements-dev.txt |  xargs pip install; \
           sed -i "s/PyYAML==5.4.1/PyYAML==6.0.1/" requirements.txt; \
           pip install -r ./requirements-dev.txt --ignore-installed; \
           make types-test;'
