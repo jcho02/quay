@@ -1,13 +1,10 @@
 name: Multiarch build
 
 on:
-  # schedule:
-  #   - cron: '30 5 * * *'
-  workflow_dispatch:
-    inputs: {}
-  # push:
-  #   branches:
-  #   - "dev-master-5"
+  push:
+    branches:
+    - "!dependabot/*"
+    - "*"
   
       
 env:
