@@ -49,6 +49,7 @@ jobs:
   pre-commit-checks:
     name: Pre-commit checks
     runs-on: ubuntu-22.04
+    if: ${{ github.event_name == 'pull_request' }}
     steps:
 
     - name: Checkout
@@ -96,14 +97,20 @@ jobs:
         cat requirements-dev.txt | grep tox | xargs pip install
 
     - name: tox
-      run: tox -e py39-unit
+      run: tox -e py39-unit -- --cov=./ --cov-report=xml
+
+    - name: Upload coverage reports to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        flags: unit
 
   types:
     name: Types Test
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        architecture: [ linux/amd64, linux/ppc64le ]
+        architecture: [ amd64, ppc64le ]        
     steps:   
 
     - name: Checkout
@@ -120,7 +127,7 @@ jobs:
 
     - name: Run types-test on amd64
       run: |
-        if [[ "${{ matrix.architecture }}" == "linux/amd64" ]]; then
+        if [[ "${{ matrix.architecture }}" == "amd64" ]]; then
           echo "amd64"          
           sudo apt-get update
           sudo apt-get install libgpgme-dev libldap2-dev libsasl2-dev swig
@@ -137,27 +144,17 @@ jobs:
 
     - name: Run types-test on ppc64le 
       run: |
-        if [[ "${{ matrix.architecture }}" == "linux/ppc64le" ]]; then
-          docker run --rm --platform ${{ matrix.architecture }} -v /var/run/docker.sock:/var/run/docker.sock --mount "type=bind,src=$(pwd),dst=/quay" -w "/quay" python:3.9 /bin/bash -ec ' \
-          export DEBIAN_FRONTEND=noninteractive; \
-          apt-get update -y && apt-get install -y build-essential autoconf libtool pkg-config git software-properties-common curl; \
-          apt-get install -y apt-transport-https ca-certificates curl wget make libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev llvm; \
-          apt-get install -y libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev; \
-          apt-get install -y libxml2 libxslt1.1 libgpgme-dev libldap2-dev libsasl2-dev swig libtiff5-dev libopenjp2-7-dev; \
-          apt-get install -y libfreetype6-dev liblcms2-dev libwebp-dev tcl8.6-dev tk8.6-dev python3-tk; \
-          apt-get install -y libharfbuzz-dev libfribidi-dev libxcb1-dev build-essential cargo python3-dev python3-setuptools; \
-          apt-get -y install python3-dev python3-setuptools; \
-          pip install --upgrade pip==23.2.1; \
-          echo "***$(python --version)***"; \
-          echo "***$(pip --version)***"; \
-          pip install -U setuptools wheel Cython==3.0.0a9 launchpadlib==1.11.0; \
-          ./hack/verify-requirements.sh; \
-          pip install -r ./requirements-dev.txt --ignore-installed; \
-          make types-test;'
+        if [[ "${{ matrix.architecture }}" == "ppc64le" ]]; then
+          docker run \
+            --rm \
+            --platform "linux/ppc64le" \
+            "quay.io/jcho0/types-test:latest" \
+            /bin/bash -ec ' \
+            make types-test;'
         else
           echo " Running on ${{ matrix.architecture }}"
         fi
-    
+
   e2e:
     name: E2E Tests
     runs-on: ubuntu-20.04
@@ -228,7 +225,7 @@ jobs:
 
     - name: Checkout
       uses: actions/checkout@v3
-
+    
     - name: Seed Database
       run: cd web && npm run quay:seed
 
@@ -247,7 +244,7 @@ jobs:
         docker restart quay-quay
         sleep 30
         make integration-test
-
+    
     - name: Cypress run
       uses: cypress-io/github-action@v5
       with:

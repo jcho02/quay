@@ -1,0 +1,51 @@
+name: Multiarch build
+
+on:
+  # schedule:
+  #   - cron: '30 5 * * *'
+  workflow_dispatch:
+    inputs: {}
+  # push:
+  #   branches:
+  #   - "dev-master-5"
+  
+      
+env:
+  IMAGE_NAME: types-test
+  IMAGE_TAG: latest
+  IMAGE_REGISTRY: quay.io
+  IMAGE_NAMESPACE: jcho0
+
+jobs:
+  build:
+    name: Build and push multi-arch image
+    runs-on: ubuntu-20.04
+    
+    steps:
+      - uses: actions/checkout@v2
+        
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1      
+        
+      - name: Build image 
+        id: build-image
+        uses: redhat-actions/buildah-build@v2
+        with:
+          image: ${{ env.IMAGE_NAME }}
+          tags: ${{ env.IMAGE_TAG }}
+          archs: ppc64le
+          dockerfiles: |
+            ./Dockerfile.types-test
+            
+      - name: Push To quay.io
+        id: push-to-quay
+        uses: redhat-actions/push-to-registry@v2
+        with:
+          image: ${{ steps.build-image.outputs.image }}
+          tags: ${{ steps.build-image.outputs.tags }}
+          registry: ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAMESPACE }}
+          username: ${{ secrets.QUAY_USER }}
+          password: ${{ secrets.QUAY_PWD }}
+
+      - name: Print image url
+        run: echo "Image pushed to ${{ steps.push-to-quay.outputs.registry-paths }}"
